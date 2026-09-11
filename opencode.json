@@ -4,7 +4,7 @@
   "username": "multi-agents-user",
   "share": "manual",
   "autoupdate": true,
-  "instructions": ["README.md"],
+  "instructions": ["README.md", ".opencode/AGENT-POLICY.md", ".opencode/memory/project.md", ".opencode/memory/decisions/README.md"],
   "skills": {
     "paths": [".opencode/skills"]
   },

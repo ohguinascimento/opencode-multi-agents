@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Decision Record",
+  "type": "object",
+  "required": ["id", "title", "status", "date", "source", "decision", "impact"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^ADR-[0-9]{3,}$"},
+    "title": {"type": "string", "minLength": 3},
+    "status": {"enum": ["proposed", "accepted", "rejected", "superseded"]},
+    "date": {"type": "string", "format": "date"},
+    "author": {"type": "string"},
+    "source": {"type": "string", "minLength": 3},
+    "decision": {"type": "string", "minLength": 10},
+    "impact": {"type": "array", "items": {"type": "string"}},
+    "validation": {"type": "array", "items": {"type": "string"}},
+    "supersedes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

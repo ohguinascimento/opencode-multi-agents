@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gate Result",
+  "type": "object",
+  "required": ["gate", "status", "timestamp", "checks"],
+  "properties": {
+    "gate": {"enum": ["architecture", "backend", "frontend", "security", "qa", "devops"]},
+    "status": {"enum": ["pending", "running", "passed", "failed", "blocked", "waived"]},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "checks": {"type": "array", "items": {"type": "object", "required": ["name", "status"], "properties": {"name": {"type": "string"}, "status": {"enum": ["passed", "failed", "skipped"]}, "details": {"type": "string"}}, "additionalProperties": false}},
+    "commands": {"type": "array", "items": {"type": "object", "required": ["command", "exit_code"], "properties": {"command": {"type": "string"}, "exit_code": {"type": "integer"}, "output": {"type": "string"}}, "additionalProperties": false}},
+    "coverage": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "approved_by": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
