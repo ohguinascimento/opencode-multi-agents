@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "workflow": null,
+  "project": null,
+  "status": "not_started",
+  "current_agent": null,
+  "started_at": null,
+  "updated_at": null,
+  "completed_agents": [],
+  "skipped_agents": [],
+  "pending_agents": [],
+  "failed_agents": [],
+  "artifacts": [],
+  "decisions": [],
+  "risks": [],
+  "gates": {
+    "architecture": "pending",
+    "backend": "pending",
+    "frontend": "pending",
+    "security": "pending",
+    "qa": "pending",
+    "devops": "pending"
+  },
+  "blockers": [],
+  "last_validation": null,
+  "history": []
+}
