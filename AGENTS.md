@@ -14,8 +14,15 @@
 ## Multi-Agent Package Commands
 - Start OpenCode: `./start.sh` or `.\start.ps1` (shell scripts that install/find `opencode` and launch UI). Pass `-Auto` (PowerShell) or `--auto` (Bash) to run non-interactively without prompting for permissions.
 - Switch permission modes: `.\set-mode.ps1 [auto|ask]` (Windows) or `./set-mode.sh [auto|ask]` (Linux/Mac).
+- Sync skills to Antigravity: `.\sync-skills.ps1` (Windows) or `./sync-skills.sh` (Linux/Mac) mirrors `.opencode/skills/` into `.agents/skills/` and `~/.gemini/config/skills/`.
 - `/setup`, `/start-project`, `/review-code`, `/mode`, etc. are **slash commands typed inside the OpenCode UI**, not shell commands.
-- Install into another project: `./install.sh <target-dir>` or `.\install.ps1 -TargetDir "C:\path\to\project"` (copies agents, commands, skills, opencode.json, scripts, env/gitignore templates).
+- Install into another project: `./install.sh <target-dir>` or `.\install.ps1 -TargetDir "C:\path\to\project"` (copies agents, commands, skills, Antigravity `.agents/skills`, opencode.json, scripts, env/gitignore templates).
+
+## Antigravity IDE Integration
+- Workspace skills root: `.agents/skills/<name>/SKILL.md`
+- Global skills root: `~/.gemini/config/skills/<name>/SKILL.md`
+- Rules: `AGENTS.md` is automatically loaded by Antigravity as workspace instructions.
 
 ## Verification Shortcuts
 - OpenCode config: ensure `opencode.json` is valid JSON; agent/command/skill paths match directory names.
+

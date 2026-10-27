@@ -1,0 +1,4 @@
+interface:
+  display_name: "Documentation"
+  short_description: "Crie documentação técnica consistente e verificável"
+  default_prompt: "Use $documentation para documentar este projeto com base nos arquivos e decisões verificadas."

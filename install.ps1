@@ -60,6 +60,13 @@ Copy-Item -Recurse -Force ".opencode\command" "$TargetDir\.opencode\"
 Print-Info "Copiando skills..."
 Copy-Item -Recurse -Force ".opencode\skills" "$TargetDir\.opencode\"
 
+# Configurar skills para Antigravity (.agents\skills)
+Print-Info "Configurando skills para Antigravity (.agents\skills)..."
+if (-not (Test-Path "$TargetDir\.agents\skills")) {
+    New-Item -ItemType Directory -Force -Path "$TargetDir\.agents\skills" | Out-Null
+}
+Copy-Item -Recurse -Force ".opencode\skills\*" "$TargetDir\.agents\skills\"
+
 # Copiar configuracao
 Print-Info "Copiando configuracao..."
 Copy-Item -Force "opencode.json" "$TargetDir\"

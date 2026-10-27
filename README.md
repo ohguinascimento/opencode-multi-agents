@@ -295,6 +295,8 @@ Você pode alternar se o OpenCode deve pedir confirmação a cada alteração ou
 .devcontainer/       # Codespaces (ambiente pronto)
 ├── devcontainer.json
 └── setup.sh
+sync-skills.sh       # Sincroniza skills com Antigravity (Linux/Mac)
+sync-skills.ps1      # Sincroniza skills com Antigravity (Windows)
 set-mode.sh          # Alterna permissões (Linux/Mac)
 set-mode.ps1         # Alterna permissões (Windows)
 install.sh           # Instala em outro projeto (Linux/Mac)
@@ -302,6 +304,35 @@ install.ps1          # Instala em outro projeto (Windows)
 start.sh             # Inicia com guia interativo (Linux/Mac)
 start.ps1            # Inicia com guia interativo (Windows)
 ```
+
+## 🚀 Integração com o Google Antigravity IDE
+
+As 6 skills especialistas e as diretrizes do OpenCode são 100% compatíveis com o ecossistema de Customizações do **Google Antigravity**.
+
+### 1. Sincronizar Skills Especialistas
+Execute o script de sincronização para disponibilizar as skills no workspace (`.agents/skills`) e na raiz global do Antigravity (`~/.gemini/config/skills`):
+
+**Windows PowerShell:**
+```powershell
+.\sync-skills.ps1
+```
+
+**Linux / Mac:**
+```bash
+./sync-skills.sh
+```
+
+### 2. Formas de Utilização no Antigravity:
+- **Ativação Automática (Progressive Disclosure):** O Antigravity monitora suas perguntas no chat. Se você pedir arquitetura, modelagem de banco, APIs, segurança ou testes, ele carrega a skill especialista necessária de forma transparente.
+- **Invocação Direta:** Você pode instruir o Antigravity no chat:
+  - *"Aplique a skill @system-design para calcular capacidade e diagramar C4 da nossa fila."*
+  - *"Siga @api-design para desenhar os endpoints RESTful de pagamentos."*
+  - *"Revise estes arquivos seguindo @security-best-practices."*
+- **Execução Headless do OpenCode pelo Antigravity:** O Antigravity pode executar agentes do OpenCode via terminal:
+  ```bash
+  opencode run --agent architect --auto "Projete a arquitetura do microsserviço"
+  ```
+- **Instruções Globais de Repositório:** O arquivo `AGENTS.md` na raiz é lido nativamente pelo Antigravity como contexto prioritário.
 
 ## Contribuição
 

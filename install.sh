@@ -84,6 +84,11 @@ install_files() {
     print_info "Copiando skills..."
     cp -r .opencode/skills "$TARGET_DIR/.opencode/"
     
+    # Configurar skills para Antigravity (.agents/skills)
+    print_info "Configurando skills para Antigravity (.agents/skills)..."
+    mkdir -p "$TARGET_DIR/.agents/skills"
+    cp -rf .opencode/skills/* "$TARGET_DIR/.agents/skills/"
+    
     # Copiar configuração
     print_info "Copiando configuração..."
     cp opencode.json "$TARGET_DIR/"
