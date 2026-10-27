@@ -3,7 +3,6 @@
 ## Scope
 - This repo is the `opencode-multi-agents` package: OpenCode agents, commands, skills, schemas, state, and operational docs.
 - **Do not assume the repo root is the user's product project.** `.opencode/AGENT-POLICY.md` requires asking for and confirming the absolute target path before creating product code (`app/`, `src/`, `frontend/`, `backend/`, `tests`, etc.).
-- The root also contains Fleet Management Laravel/React files and a duplicate-ish `fleet-management/` tree; treat these as product code only after the user explicitly confirms which path is the target.
 
 ## OpenCode Config
 - `opencode.json` is strict-schema (`$schema: https://opencode.ai/config.json`); invalid fields prevent startup.
@@ -18,15 +17,5 @@
 - `/setup`, `/start-project`, `/review-code`, `/mode`, etc. are **slash commands typed inside the OpenCode UI**, not shell commands.
 - Install into another project: `./install.sh <target-dir>` or `.\install.ps1 -TargetDir "C:\path\to\project"` (copies agents, commands, skills, opencode.json, scripts, env/gitignore templates).
 
-## Fleet App Boundaries (Only If Target Is Confirmed)
-- Backend: `bootstrap/app.php` wires routes; API routes in `routes/api.php`; domain code under `app/Domains/<Domain>/` (Controller → Service → Repository).
-- Frontend: entrypoint `frontend/src/main.tsx`; Vite dev server on `5173`, proxies `/api` to `http://localhost:8080`.
-- Stack: Laravel 12/PHP 8.2, Sanctum, Horizon, MySQL, MongoDB, Redis (backend); React 18/TS/Vite/Tailwind (frontend).
-- `.env.example` root is for the multi-agent package (AI config), **not** a Laravel env template. Do not use it for app setup.
-- Docker: `docker compose up -d --build`; entrypoint runs `php artisan migrate --force` on boot; seed manually: `docker compose exec app php artisan db:seed --force`.
-- No standardized backend tests (`tests/` absent); frontend has build/lint only: `npm run build`, `npm run lint`.
-
 ## Verification Shortcuts
 - OpenCode config: ensure `opencode.json` is valid JSON; agent/command/skill paths match directory names.
-- Backend (when app target confirmed): `php -l <file>`, `php artisan route:list`.
-- Frontend (when app target confirmed): from `frontend/`, `npm run lint` then `npm run build`.

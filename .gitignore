@@ -2,7 +2,7 @@
 .env
 .env.local
 .env.*.local
-.env.backup
+.env.backup*
 
 # Node
 node_modules/
@@ -34,26 +34,3 @@ logs/
 tmp/
 temp/
 .tmp/
-
-# Laravel
-/vendor/
-/storage/framework/cache/*
-!/storage/framework/cache/.gitignore
-/storage/framework/sessions/*
-!/storage/framework/sessions/.gitignore
-/storage/framework/testing/
-/storage/logs/*
-!/storage/logs/.gitignore
-/storage/app/public/*
-!/storage/app/public/.gitignore
-/public/build/
-.env
-composer.lock
-
-# Docker volumes
-mysql-data/
-mongo-data/
-redis-data/
-grafana-data/
-
-fleet-management/
