@@ -1,196 +1,204 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "model": "opencode/big-pickle",
-  "username": "multi-agents-user",
-  "share": "manual",
-  "autoupdate": true,
-  "instructions": ["README.md", ".opencode/AGENT-POLICY.md", ".opencode/memory/project.md", ".opencode/memory/decisions/README.md"],
-  "skills": {
-    "paths": [".opencode/skills"]
-  },
-  "agent": {
-    "tech-lead": {
-      "description": "Orquestra todos os agentes do projeto, coordena fluxo de trabalho e toma decisões de arquitetura",
-      "mode": "primary",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "deny",
-        "bash": "deny",
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "architect": {
-      "description": "Pesquisa e define a melhor arquitetura, tecnologias, custos e tempo estimado para o projeto",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "deny",
-        "bash": "deny",
-        "task": {
-          "*": "deny",
-          "data-engineer": "allow",
-          "ui-ux": "allow"
-        }
-      }
-    },
-    "data-engineer": {
-      "description": "Modela banco de dados, cria queries, define schema e gerencia dados do projeto",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "ui-ux": {
-      "description": "Cria wireframes, protótipos e define a experiência do usuário para o projeto",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "deny",
-        "task": {
-          "*": "deny",
-          "frontend-dev": "allow"
-        }
-      }
-    },
-    "backend-dev": {
-      "description": "Implementa toda a lógica do servidor, APIs, autenticação e integrações",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny",
-          "backend-reviewer": "allow"
-        }
-      }
-    },
-    "backend-reviewer": {
-      "description": "Revisa código backend, identifica melhorias, problemas de segurança e boas práticas",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "deny",
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "frontend-dev": {
-      "description": "Implementa a interface do usuário com React, Angular, Vue ou stack moderna",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny",
-          "frontend-reviewer": "allow"
-        }
-      }
-    },
-    "frontend-reviewer": {
-      "description": "Revisa código frontend, identifica melhorias e garante boas práticas de UI",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "deny",
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "security": {
-      "description": "Auditoria de segurança, pen tests, proteção contra vulnerabilidades e compliance",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "documentation": {
-      "description": "Cria e mantém documentação completa do projeto para desenvolvedores e usuários",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "deny",
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "devops": {
-      "description": "Configura CI/CD, Docker, infraestrutura cloud e processos de deploy",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny",
-          "qa-engineer": "allow"
-        }
-      }
-    },
-    "qa-engineer": {
-      "description": "Cria e executa testes automatizados unitários, de integração e E2E",
-      "mode": "subagent",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny"
-        }
-      }
-    },
-    "setup": {
-      "description": "Configura o ambiente do projeto, coleta API keys e valida conexões na primeira execução",
-      "mode": "primary",
-      "model": "opencode/big-pickle",
-      "permission": {
-        "read": "allow",
-        "edit": "allow",
-        "bash": "allow",
-        "task": {
-          "*": "deny"
-        }
-      }
-    }
-  },
-  "permission": {
-    "read": "allow",
-    "edit": "ask",
-    "bash": "ask",
-    "task": {
-      "*": "ask"
-    }
-  }
+    "$schema":  "https://opencode.ai/config.json",
+    "model":  "opencode/big-pickle",
+    "username":  "multi-agents-user",
+    "share":  "manual",
+    "autoupdate":  true,
+    "instructions":  [
+                         "AGENTS.md",
+                         "README.md",
+                         ".opencode/AGENT-POLICY.md",
+                         ".opencode/memory/project.md",
+                         ".opencode/memory/decisions/README.md"
+                     ],
+    "skills":  {
+                   "paths":  [
+                                 ".opencode/skills"
+                             ]
+               },
+    "agent":  {
+                  "tech-lead":  {
+                                    "description":  "Orquestra todos os agentes do projeto, coordena fluxo de trabalho e toma decisÃƒÆ’Ã‚Âµes de arquitetura",
+                                    "mode":  "primary",
+                                    "model":  "opencode/big-pickle",
+                                    "permission":  {
+                                                       "read":  "allow",
+                                                       "edit":  "deny",
+                                                       "bash":  "deny",
+                                                       "task":  {
+                                                                    "*":  "allow"
+                                                                }
+                                                   }
+                                },
+                  "architect":  {
+                                    "description":  "Especialista em System Design, arquitetura escalÃƒÆ’Ã‚Â¡vel, estimativas de capacidade, padrÃƒÆ’Ã‚Âµes de resiliÃƒÆ’Ã‚Âªncia e ADRs",
+                                    "mode":  "subagent",
+                                    "model":  "opencode/big-pickle",
+                                    "permission":  {
+                                                       "read":  "allow",
+                                                       "edit":  "deny",
+                                                       "bash":  "deny",
+                                                       "task":  {
+                                                                    "*":  "deny",
+                                                                    "data-engineer":  "allow",
+                                                                    "ui-ux":  "allow"
+                                                                }
+                                                   }
+                                },
+                  "data-engineer":  {
+                                        "description":  "Modela banco de dados, cria queries, define schema e gerencia dados do projeto",
+                                        "mode":  "subagent",
+                                        "model":  "opencode/big-pickle",
+                                        "permission":  {
+                                                           "read":  "allow",
+                                                           "edit":  "allow",
+                                                           "bash":  "allow",
+                                                           "task":  {
+                                                                        "*":  "deny"
+                                                                    }
+                                                       }
+                                    },
+                  "ui-ux":  {
+                                "description":  "Cria wireframes, protÃƒÆ’Ã‚Â³tipos e define a experiÃƒÆ’Ã‚Âªncia do usuÃƒÆ’Ã‚Â¡rio para o projeto",
+                                "mode":  "subagent",
+                                "model":  "opencode/big-pickle",
+                                "permission":  {
+                                                   "read":  "allow",
+                                                   "edit":  "allow",
+                                                   "bash":  "deny",
+                                                   "task":  {
+                                                                "*":  "deny",
+                                                                "frontend-dev":  "allow"
+                                                            }
+                                               }
+                            },
+                  "backend-dev":  {
+                                      "description":  "Implementa toda a lÃƒÆ’Ã‚Â³gica do servidor, APIs, autenticaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes",
+                                      "mode":  "subagent",
+                                      "model":  "opencode/big-pickle",
+                                      "permission":  {
+                                                         "read":  "allow",
+                                                         "edit":  "allow",
+                                                         "bash":  "allow",
+                                                         "task":  {
+                                                                      "*":  "deny",
+                                                                      "backend-reviewer":  "allow"
+                                                                  }
+                                                     }
+                                  },
+                  "backend-reviewer":  {
+                                           "description":  "Revisa cÃƒÆ’Ã‚Â³digo backend, identifica gargalos de System Design, problemas de seguranÃƒÆ’Ã‚Â§a e boas prÃƒÆ’Ã‚Â¡ticas",
+                                           "mode":  "subagent",
+                                           "model":  "opencode/big-pickle",
+                                           "permission":  {
+                                                              "read":  "allow",
+                                                              "edit":  "allow",
+                                                              "bash":  "deny",
+                                                              "task":  {
+                                                                           "*":  "deny"
+                                                                       }
+                                                          }
+                                       },
+                  "frontend-dev":  {
+                                       "description":  "Implementa a interface do usuÃƒÆ’Ã‚Â¡rio com React, Angular, Vue ou stack moderna",
+                                       "mode":  "subagent",
+                                       "model":  "opencode/big-pickle",
+                                       "permission":  {
+                                                          "read":  "allow",
+                                                          "edit":  "allow",
+                                                          "bash":  "allow",
+                                                          "task":  {
+                                                                       "*":  "deny",
+                                                                       "frontend-reviewer":  "allow"
+                                                                   }
+                                                      }
+                                   },
+                  "frontend-reviewer":  {
+                                            "description":  "Revisa cÃƒÆ’Ã‚Â³digo frontend, identifica melhorias e garante boas prÃƒÆ’Ã‚Â¡ticas de UI",
+                                            "mode":  "subagent",
+                                            "model":  "opencode/big-pickle",
+                                            "permission":  {
+                                                               "read":  "allow",
+                                                               "edit":  "allow",
+                                                               "bash":  "deny",
+                                                               "task":  {
+                                                                            "*":  "deny"
+                                                                        }
+                                                           }
+                                        },
+                  "security":  {
+                                   "description":  "Auditoria de seguranÃƒÆ’Ã‚Â§a, pen tests, proteÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o contra vulnerabilidades e compliance",
+                                   "mode":  "subagent",
+                                   "model":  "opencode/big-pickle",
+                                   "permission":  {
+                                                      "read":  "allow",
+                                                      "edit":  "allow",
+                                                      "bash":  "allow",
+                                                      "task":  {
+                                                                   "*":  "deny"
+                                                               }
+                                                  }
+                               },
+                  "documentation":  {
+                                        "description":  "Cria e mantÃƒÆ’Ã‚Â©m documentaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o completa do projeto para desenvolvedores e usuÃƒÆ’Ã‚Â¡rios",
+                                        "mode":  "subagent",
+                                        "model":  "opencode/big-pickle",
+                                        "permission":  {
+                                                           "read":  "allow",
+                                                           "edit":  "allow",
+                                                           "bash":  "deny",
+                                                           "task":  {
+                                                                        "*":  "deny"
+                                                                    }
+                                                       }
+                                    },
+                  "devops":  {
+                                 "description":  "Configura CI/CD, Docker, alta disponibilidade, observabilidade e processos de deploy",
+                                 "mode":  "subagent",
+                                 "model":  "opencode/big-pickle",
+                                 "permission":  {
+                                                    "read":  "allow",
+                                                    "edit":  "allow",
+                                                    "bash":  "allow",
+                                                    "task":  {
+                                                                 "*":  "deny",
+                                                                 "qa-engineer":  "allow"
+                                                             }
+                                                }
+                             },
+                  "qa-engineer":  {
+                                      "description":  "Cria e executa testes automatizados unitÃƒÆ’Ã‚Â¡rios, de integraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e E2E",
+                                      "mode":  "subagent",
+                                      "model":  "opencode/big-pickle",
+                                      "permission":  {
+                                                         "read":  "allow",
+                                                         "edit":  "allow",
+                                                         "bash":  "allow",
+                                                         "task":  {
+                                                                      "*":  "deny"
+                                                                  }
+                                                     }
+                                  },
+                  "setup":  {
+                                "description":  "Configura o ambiente do projeto, coleta API keys e valida conexÃƒÆ’Ã‚Âµes na primeira execuÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o",
+                                "mode":  "primary",
+                                "model":  "opencode/big-pickle",
+                                "permission":  {
+                                                   "read":  "allow",
+                                                   "edit":  "allow",
+                                                   "bash":  "allow",
+                                                   "task":  {
+                                                                "*":  "deny"
+                                                            }
+                                               }
+                            }
+              },
+    "permission":  {
+                       "read":  "allow",
+                       "edit":  "allow",
+                       "bash":  "allow",
+                       "task":  {
+                                    "*":  "allow"
+                                }
+                   }
 }

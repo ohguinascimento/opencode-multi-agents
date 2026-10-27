@@ -88,6 +88,13 @@ install_files() {
     print_info "Copiando configuração..."
     cp opencode.json "$TARGET_DIR/"
     
+    # Copiar scripts de inicialização e modo
+    print_info "Copiando scripts..."
+    [ -f "start.sh" ] && cp start.sh "$TARGET_DIR/"
+    [ -f "start.ps1" ] && cp start.ps1 "$TARGET_DIR/"
+    [ -f "set-mode.sh" ] && cp set-mode.sh "$TARGET_DIR/"
+    [ -f "set-mode.ps1" ] && cp set-mode.ps1 "$TARGET_DIR/"
+    
     # Copiar .gitignore (se não existir)
     if [ ! -f "$TARGET_DIR/.gitignore" ]; then
         cp .gitignore "$TARGET_DIR/"

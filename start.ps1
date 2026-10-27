@@ -2,6 +2,11 @@
 # opencode-multi-agents - Start Script (Windows)
 # ============================================
 
+param(
+    [switch]$Auto,
+    [switch]$Ask
+)
+
 $ErrorActionPreference = "Stop"
 
 # Cores (apenas cores basicas do PowerShell)
@@ -189,6 +194,7 @@ function Show-Help {
     Write-Host "  /security-audit  - Auditoria de seguranca"
     Write-Host "  /deploy          - Configurar deploy"
     Write-Host "  /status          - Ver progresso"
+    Write-Host "  /mode            - Ver/configurar modo de permissoes"
     Write-Host ""
     Write-Host "=============================================" -ForegroundColor $Blue
     Write-Host "  MANTER ATUALIZADO" -ForegroundColor $Blue
@@ -240,6 +246,31 @@ if ($hasKey) {
     Show-Help "first"
 }
 
-Print-Info "Iniciando opencode..."
-Write-Host ""
-& opencode
+# Detectar modo de permissoes (Auto vs Ask)
+$isAuto = $false
+if ($Auto) {
+    $isAuto = $true
+} elseif ($Ask) {
+    $isAuto = $false
+} else {
+    try {
+        $cfg = Get-Content "opencode.json" -Raw | ConvertFrom-Json
+        if ($cfg.permission.edit -eq "allow" -and $cfg.permission.bash -eq "allow") {
+            $isAuto = $true
+        }
+    } catch {}
+}
+
+if ($isAuto) {
+    Print-OK "Modo de Permissoes: AUTONOMO (Sem pedir permissao para modificacoes/comandos)"
+    Print-Info "Iniciando opencode com --auto..."
+    Write-Host ""
+    & opencode --auto
+} else {
+    Print-Warn "Modo de Permissoes: SEGURO / INTERATIVO (Pedira confirmacao a cada alteracao)"
+    Print-Info "Dica: Para executar sem confirmacao, use .\start.ps1 -Auto ou rode .\set-mode.ps1 auto"
+    Write-Host ""
+    Print-Info "Iniciando opencode..."
+    Write-Host ""
+    & opencode
+}

@@ -5,8 +5,8 @@
 ![Release](https://img.shields.io/badge/release-v0.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Agents](https://img.shields.io/badge/agents-13-orange)
-![Commands](https://img.shields.io/badge/commands-12-purple)
-![Skills](https://img.shields.io/badge/skills-4-yellow)
+![Commands](https://img.shields.io/badge/commands-13-purple)
+![Skills](https://img.shields.io/badge/skills-6-yellow)
 ![Language](https://img.shields.io/badge/language-Portuguese--BR-brightgreen)
 
 ## Visão Geral
@@ -21,17 +21,17 @@ Usuário → Tech Lead → Architect → Data Engineer → UI/UX → Backend →
 
 | # | Agente | Função |
 |---|--------|--------|
-| 1 | **Tech Lead** | Orquestra todos os agentes |
-| 2 | **Architect** | Define tecnologias e arquitetura |
-| 3 | **Data Engineer** | Modela banco de dados |
+| 1 | **Tech Lead** | Orquestra todos os agentes e valida gates |
+| 2 | **Architect** | Define System Design, capacidade, resiliência e ADRs |
+| 3 | **Data Engineer** | Modela banco de dados, escala e cache |
 | 4 | **UI/UX** | Cria design da interface |
-| 5 | **Backend Dev** | Implementa APIs e lógica |
-| 6 | **Backend Reviewer** | Revisa código backend |
+| 5 | **Backend Dev** | Implementa APIs resilientes e workers |
+| 6 | **Backend Reviewer** | Revisa código backend e System Design |
 | 7 | **Frontend Dev** | Implementa interface |
 | 8 | **Frontend Reviewer** | Revisa código frontend |
 | 9 | **Security** | Auditoria de segurança |
 | 10 | **QA Engineer** | Cria testes automatizados |
-| 11 | **DevOps** | Configura CI/CD e deploy |
+| 11 | **DevOps** | Configura CI/CD, HA, observabilidade e deploy |
 | 12 | **Documentation** | Gera documentação |
 
 ## 🚀 Começando Agora
@@ -127,7 +127,7 @@ Recomendado para quem quer iniciar um projeto do zero com os agentes prontos.
 Os comandos como `/setup`, `/start-project` são digitados **DENTRO da interface do opencode**, **NÃO** no terminal bash.
 
 ```
-❌ ERRA DO:  bash$ /setup            ← não funciona!
+❌ ERRADO:   bash$ /setup            ← não funciona!
 ✅ CORRETO:  bash$ ./start.sh        ← abre o opencode
              opencode> /setup        ← digite dentro do opencode
 ```
@@ -181,6 +181,21 @@ O Tech Lead irá:
 | `/redo [agente]` | Refazer agente |
 | `/setup-status` | Ver configuração |
 | `/setup-reset` | Resetar configuração |
+| `/mode` | Ver/alternar modo de permissões (autônomo vs seguro) |
+
+### 🛡️ Modos de Permissão (Autônomo vs Seguro)
+
+Você pode alternar se o OpenCode deve pedir confirmação a cada alteração ou agir de forma 100% autônoma:
+
+* **Modo Autônomo (Padrão Recomendado)**: Modifica arquivos, roda comandos de teste e delega tarefas sem interrupções manuais.
+  * Ativar no Windows: `powershell .\set-mode.ps1 auto`
+  * Ativar no Linux/Mac: `./set-mode.sh auto`
+  * Iniciar diretamente: `.\start.ps1 -Auto` ou `./start.sh --auto`
+* **Modo Seguro / Interativo**: Exibe um pedido de confirmação (`ask`) antes de cada alteração de arquivo ou comando bash.
+  * Ativar no Windows: `powershell .\set-mode.ps1 ask`
+  * Ativar no Linux/Mac: `./set-mode.sh ask`
+  * Iniciar diretamente: `.\start.ps1 -Ask` ou `./start.sh --ask`
+* **Verificar Status Atual**: Execute `.\set-mode.ps1 status` no terminal ou `/mode` dentro do OpenCode.
 
 ## Fluxo de Trabalho
 
@@ -188,40 +203,42 @@ O Tech Lead irá:
 ┌─────────────────────────────────────────────────────────────┐
 │  USUÁRIO                                                    │
 │  "Quero criar um SaaS de gestão escolar"                   │
+│  e confirma pasta absoluta de trabalho                      │
 └─────────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  TECH LEAD                                                  │
-│  Pergunta: orçamento, prazo, stack                          │
+│  Pergunta: objetivos, tráfego, volume e SLAs                │
 │  → Invoca: Architect                                        │
 └─────────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  ARCHITECT                                                  │
-│  Define: React + Node + PostgreSQL                          │
+│  ARCHITECT (System Design)                                  │
+│  Estimativas de capacidade (QPS, Banda, Storage),           │
+│  Topologia C4, Resiliência, SPOFs e Proposta de ADR         │
 │  → Invoca: Data Engineer + UI/UX                            │
 └─────────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  DATA ENGINEER + UI/UX (paralelo)                           │
-│  Data: Schema do banco │ UI/UX: Design da interface         │
+│  Data: Schema, índices, pools e outbox │ UI/UX: Design      │
 │  → Invoca: Backend Dev + Frontend Dev                       │
 └─────────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  BACKEND DEV + FRONTEND DEV (paralelo)                      │
-│  Implementam código                                         │
+│  Backend: APIs, Idempotência, Circuit Breaker, Workers      │
 │  → Invoca: Reviewers                                        │
 └─────────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  SECURITY + QA + DEVOPS + DOCUMENTATION                     │
-│  Segurança, testes, deploy, docs                            │
+│  Segurança, testes, HA/Observabilidade, docs                │
 │  → Relatório final                                          │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -266,15 +283,20 @@ O Tech Lead irá:
 │   ├── skip.md
 │   ├── redo.md
 │   ├── setup-status.md
-│   └── setup-reset.md
-└── skills/           # Skills
+│   ├── setup-reset.md
+│   └── mode.md
+└── skills/           # 6 Skills
     ├── api-design/
     ├── database-design/
+    ├── documentation/
     ├── security-best-practices/
+    ├── system-design/
     └── testing-strategies/
 .devcontainer/       # Codespaces (ambiente pronto)
 ├── devcontainer.json
 └── setup.sh
+set-mode.sh          # Alterna permissões (Linux/Mac)
+set-mode.ps1         # Alterna permissões (Windows)
 install.sh           # Instala em outro projeto (Linux/Mac)
 install.ps1          # Instala em outro projeto (Windows)
 start.sh             # Inicia com guia interativo (Linux/Mac)

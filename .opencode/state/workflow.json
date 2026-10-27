@@ -1,27 +1,489 @@
 {
   "schema_version": 1,
-  "workflow": null,
-  "project": null,
-  "status": "not_started",
+  "workflow": "invoice_processor_mvp",
+  "project": {
+    "name": "invoice-processor",
+    "path": "D:\\Projetos\\invoice-processor",
+    "stack": "Python 3.12 / FastAPI / PyMuPDF / ARQ+Redis / aiomysql / MySQL 8 / Pydantic v2"
+  },
+  "status": "completed",
   "current_agent": null,
-  "started_at": null,
-  "updated_at": null,
-  "completed_agents": [],
+  "started_at": "2026-09-11T00:00:00Z",
+  "updated_at": "2026-09-11T18:00:00Z",
+  "completed_agents": [
+    "architect",
+    "data-engineer",
+    "backend-dev",
+    "backend-reviewer",
+    "security",
+    "qa-engineer",
+    "devops",
+    "documentation",
+    "frontend-dev",
+    "frontend-reviewer"
+  ],
   "skipped_agents": [],
   "pending_agents": [],
   "failed_agents": [],
-  "artifacts": [],
-  "decisions": [],
-  "risks": [],
+  "artifacts": [
+    {
+      "agent": "architect",
+      "file": ".opencode/state/handoffs/architect-20260911-invoice-backend-mvp.md",
+      "description": "Proposta de stack e arquitetura (FastAPI + ARQ/Redis + PyMuPDF + aiomysql)"
+    },
+    {
+      "agent": "data-engineer",
+      "file": ".opencode/state/handoffs/data-engineer-20260911-invoice-schema-mvp.md",
+      "description": "Schema MySQL 8 (4 tabelas, índices, padrões de performance)"
+    },
+    {
+      "agent": "backend-dev",
+      "file": ".opencode/state/handoffs/backend-dev-20260911-invoice-mvp.md",
+      "description": "MVP implementado em D:\\Projetos\\invoice-processor (14 arquivos, 14 testes pass)"
+    },
+    {
+      "agent": "backend-reviewer",
+      "file": ".opencode/state/handoffs/backend-reviewer-20260911-invoice-mvp.md",
+      "description": "Revisão backend: 1 crítica + 4 altas + 1 média corrigidas; evidências pós-correção registradas"
+    },
+    {
+      "agent": "security",
+      "file": ".opencode/state/handoffs/security-20260911-invoice-mvp.md",
+      "description": "Auditoria de segurança: crítico auth/IDOR e altos (rate limit/DoS, Docker/Redis/ports, validação PDF, mensagens) corrigidos; gate security passed"
+    },
+    {
+      "agent": "qa-engineer",
+      "file": ".opencode/state/handoffs/qa-engineer-20260911-invoice-mvp.md",
+      "description": "QA: 3 arquivos de teste criados (helpers, schemas/config, smoke); suíte 68/68 testes PASS; gate qa passed com ressalva — E2E MySQL/Redis fica pendência DevOps"
+    },
+    {
+      "agent": "devops",
+      "file": ".opencode/state/handoffs/devops-20260911-invoice-mvp.md",
+      "description": "DevOps: compose validado, portas host 3307/6380, .env local com API_KEY, E2E real ARQ/MySQL/Redis (job completed item_count=4, items corretos), pytest 68/68, runbook no README; gate devops passed"
+    },
+    {
+      "agent": "documentation",
+      "file": ".opencode/state/handoffs/documentation-20260911-invoice-mvp-final.md",
+      "description": "Documentation: handoff final — resumo do projeto (stack, arquivos, endpoints, runbook), evidências 68 testes + E2E real, riscos remanescentes, próximos passos; workflow encerrado (completed)"
+    },
+    {
+      "agent": "frontend-dev",
+      "file": ".opencode/state/handoffs/frontend-dev-20260911-invoice-ui.md",
+      "description": "Frontend React 18 + TS + Vite 5 + CSS Modules em D:\\Projetos\\invoice-processor\\frontend: upload PDF, API key opt-in, health, job polling, items, mobile responsive; build/lint/test:format exit 0; gate frontend passed (waiver superseded)"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "ADR-20260911-invoice-backend-stack",
+      "title": "Backend stack: FastAPI + ARQ/Redis + PyMuPDF + aiomysql + MySQL",
+      "status": "accepted",
+      "file": ".opencode/memory/decisions/ADR-20260911-invoice-backend-stack.md"
+    }
+  ],
+  "risks": [
+    {
+      "id": "R-001",
+      "description": "Sem OCR: PDFs escaneados retornam erro 'scanned_pdf' — não há extração de texto de imagens",
+      "severity": "medium",
+      "mitigation": "Adicionar Tesseract/PaddleOCR na v2; erro é explícito e não trava o pipeline"
+    },
+    {
+      "id": "R-002",
+      "description": "Parser genérico: regex BR pode falhar em layouts exóticos de bancos específicos",
+      "severity": "medium",
+      "mitigation": "Fallback para raw_text; criar parsers específicos por banco na v2"
+    },
+    {
+      "id": "R-003",
+      "description": "Autenticação originalmente ausente (risco de acesso não autorizado/IDOR) — mitigada por API key única compartilhada via X-API-Key (secrets.compare_digest) + fail-fast em produção",
+      "severity": "low",
+      "status": "mitigated",
+      "mitigation": "Implementado: middleware X-API-Key obrigatório em /api/v1/* e startup falha em produção sem API_KEY; evoluir para JWT/OAuth2 com escopos por usuário na v2"
+    },
+    {
+      "id": "R-004",
+      "description": "Volume de dados desconhecido: pool e batch podem precisar de tuning",
+      "severity": "medium",
+      "mitigation": "Monitorar métricas e ajustar configurações após coleta de dados reais"
+    },
+    {
+      "id": "R-005",
+      "description": "Portas 3306/6379 podiam conflitar com serviços existentes no host — mitigado: compose publica em 3307 (MySQL) e 6380 (Redis) no host; rede interna usa 3306/6379; .env.example documenta portas e API_KEY",
+      "severity": "low",
+      "status": "mitigated",
+      "mitigation": "Ajustado pelo DevOps: portas host 3307/6380 no docker-compose.yml; binding em 127.0.0.1 mantido; .env.example documenta a configuração"
+    },
+    {
+      "id": "R-006",
+      "description": "Rate limit em memória: buckets por instância não escalam com múltiplas réplicas (DoS residual em multi-instância)",
+      "severity": "medium",
+      "mitigation": "Migrar para rate limit distribuído em Redis na v2; aceitável em single-instance MVP"
+    },
+    {
+      "id": "R-007",
+      "description": ".env local criada pelo DevOps com API_KEY definida (gitignored)",
+      "severity": "low",
+      "status": "open",
+      "mitigation": "Não versionar .env; rotacionar API_KEY se o arquivo for exposto; segredo vive apenas no ambiente local"
+    }
+  ],
   "gates": {
-    "architecture": "pending",
-    "backend": "pending",
-    "frontend": "pending",
-    "security": "pending",
-    "qa": "pending",
-    "devops": "pending"
+    "architecture": "passed",
+    "backend": "passed",
+    "frontend": "passed",
+    "security": "passed",
+    "qa": "passed",
+    "devops": "passed"
   },
+  "waivers": [
+    {
+      "gate": "frontend",
+      "status": "superseded",
+      "justification": "Originalmente waived porque o MVP era backend-only por escopo confirmado pelo usuário. Depois o usuário solicitou um frontend React moderno/mobile, implementado e validado em D:\\Projetos\\invoice-processor\\frontend (build/lint/test:format exit 0 + smoke HTTP 200) — waiver substituído pelo gate frontend passed.",
+      "basis": "Aprovação implícita no escopo confirmado pelo usuário (mesma sessão que autorizou D:\\Projetos\\invoice-processor como caminho do projeto); superseded pela implementação posterior do frontend (user_requested_frontend) e pelo gate frontend passed em 2026-09-11",
+      "date": "2026-09-11",
+      "superseded_by": {
+        "gate": "frontend",
+        "status": "passed",
+        "timestamp": "2026-09-11T17:30:00Z"
+      }
+    }
+  ],
   "blockers": [],
-  "last_validation": null,
-  "history": []
+  "last_validation": {
+    "date": "2026-09-11",
+    "agent": "frontend-dev",
+    "validated_by": "tech-lead",
+    "note": "Evidência agregada final (backend + frontend): E2E real do DevOps no backend (comandos abaixo) + validações do frontend-dev/frontend-reviewer em D:\\Projetos\\invoice-processor\\frontend (npm install/build/lint/test:format exit 0 e smoke dev HTTP 200); README do produto e estado operacional verificados pelo Documentation",
+    "commands": [
+      {
+        "command": "docker compose config --quiet",
+        "exit_code": 0,
+        "note": "Compose válido (backend)"
+      },
+      {
+        "command": ".venv\\Scripts\\python.exe scripts/make_sample_pdf.py",
+        "exit_code": 0,
+        "note": "PDF de exemplo gerado (backend)"
+      },
+      {
+        "command": "docker compose build",
+        "exit_code": 0,
+        "note": "Imagens construídas (backend)"
+      },
+      {
+        "command": "docker compose up -d --build",
+        "exit_code": 0,
+        "note": "inv-app/inv-worker/inv-mysql/inv-redis up (backend)"
+      },
+      {
+        "command": "docker compose up/down/up",
+        "exit_code": 0,
+        "note": "Ciclo down/up sem falhas (backend)"
+      },
+      {
+        "command": "docker compose ps",
+        "exit_code": 0,
+        "note": "Health db/redis ok (inv-mysql, inv-redis healthy) — backend"
+      },
+      {
+        "command": "curl (X-API-Key) POST /api/v1/invoices/process + GET jobs/1 + GET items",
+        "exit_code": 0,
+        "note": "Sem chave -> 401; job criado via ARQ; GET completed invoice_id=1 item_count=4; GET items retorna 4 valores corretos; innodb_trx vazio (backend)"
+      },
+      {
+        "command": "pytest",
+        "exit_code": 0,
+        "note": "68/68 testes PASS (backend)"
+      },
+      {
+        "command": "uvicorn app.main:app --port 8001",
+        "exit_code": 0,
+        "note": "Modo local validado, porta 8001 (backend)"
+      },
+      {
+        "command": "npm.cmd install",
+        "exit_code": 0,
+        "note": "Dependências instaladas (frontend)"
+      },
+      {
+        "command": "npm.cmd run build",
+        "exit_code": 0,
+        "note": "tsc --noEmit + vite build OK (frontend)"
+      },
+      {
+        "command": "npm.cmd run lint",
+        "exit_code": 0,
+        "note": "ESLint sem erros (frontend)"
+      },
+      {
+        "command": "npm.cmd run test:format",
+        "exit_code": 0,
+        "note": "Smoke test de formatBRL — todos os casos passaram (frontend)"
+      },
+      {
+        "command": "npm.cmd run dev (smoke)",
+        "exit_code": 0,
+        "note": "Dev server Vite respondeu HTTP 200 (frontend)"
+      }
+    ],
+    "test_summary": "Backend: E2E real (MySQL+Redis+ARQ) — POST /process com X-API-Key criou job via ARQ; GET job completed (invoice_id=1, item_count=4); GET items com 4 valores corretos; innodb_trx vazio; sem chave -> 401; pytest 68/68 PASS; modo local porta 8001 ok. Frontend (D:\\Projetos\\invoice-processor\\frontend): npm install exit 0; npm run build exit 0 (tsc --noEmit + vite build); npm run lint exit 0; npm run test:format exit 0 (formatBRL todos os casos); smoke dev HTTP 200; revisado em 2 rodadas (C1/A1/A2/M1/M2 corrigidos + a11y contraste AA)",
+    "products_created": [
+      "scripts/make_sample_pdf.py",
+      "frontend/ (React 18 + TS + Vite 5 + CSS Modules): package.json, vite.config.ts, tsconfig.json, eslint.config.js, index.html, .env.example, .gitignore, src/main.tsx, src/App.tsx, src/index.css, src/types.ts, src/lib/{api,errors,format,format.test}.ts, src/hooks/{useApiKey,useHealth,useJobPolling}.ts, src/components/{ApiKeyForm,ErrorAlert,Header,HealthBadge,ItemsView,JobCard,Spinner,StatusBadge,UploadZone}.tsx + *.module.css"
+    ],
+    "products_changed": [
+      "docker-compose.yml",
+      ".env.example",
+      ".env (gitignored, local)",
+      "README.md",
+      "app/repositories.py",
+      "app/db.py",
+      "tests/test_app_helpers.py",
+      "tests/test_pdf_validation.py"
+    ],
+    "independent_validation": [
+      "Tech Lead validou por leitura: compose usa portas host 3307/6380 com app/worker habilitados e env interno mysql/redis; .env.example documenta portas e chave; repositories corrige amount e commits read-only; db.py commit no ping; make_sample_pdf.py existe; README tem runbook",
+      "Frontend-reviewer (2 rodadas): rodada 1 encontrou C1/A1/A2/M1/M2 — corrigidos (formatBRL, API key opt-in localStorage, host 127.0.0.1, AbortController timeout, polling backoff/limite de erros, integer job lookup, test:format); rodada 2 aprovou com ressalvas de contraste — a11y polish aplicado (tokens strong, contraste AA, engines Node >=23.6, formatBRL('') => '—')",
+      "Documentation: README do produto verificado — runbook Passos 1-6 reproduzível, endpoints/erros de negócio/testes documentados, estrutura de arquivos e stack coerentes com o código; state do workflow (workflow.json + handoff frontend) atualizado"
+    ],
+    "gaps": [
+      "Sem OCR (R-001): PDFs escaneados retornam scanned_pdf — v2",
+      "Parser genérico (R-002): layouts exóticos podem extrair 0 itens — v2",
+      "Volume de dados desconhecido (R-004): pool/batch podem precisar de tuning",
+      "Rate limit em memória (R-006): não escala multi-instância/replicas — v2",
+      ".env local (R-007): API_KEY definida localmente e gitignored — não versionar; rotacionar se exposta",
+      "API key no browser (F-001): fica em memória por padrão; só persiste no localStorage com opt-in explícito — risco residual XSS; evoluir para JWT/auth por usuário na v2",
+      "Frontend sem deploy estático no compose (F-002): não há serviço servindo dist/ — rodar npm run build + vite preview ou nginx na v2",
+      "test:format exige Node >=23.6 (F-003): type-stripping nativo; engines declara >=23.6.0 — usar Node 23.6+",
+      "npm audit (F-004): vulnerabilidades em dev deps reportadas (dev-only, não chegam ao dist/) — atualizar deps periodicamente"
+    ],
+    "evidence": "Handoffs: devops-20260911-invoice-mvp.md (E2E real backend), documentation-20260911-invoice-mvp-final.md (resumo final) e frontend-dev-20260911-invoice-ui.md (frontend build/lint/test:format) — todos os gates aplicáveis passed, inclusive frontend (waiver superseded)"
+  },
+  "history": [
+    {
+      "timestamp": "2026-09-11T00:00:00Z",
+      "event": "workflow_started",
+      "detail": "Workflow invoice_processor_mvp iniciado"
+    },
+    {
+      "timestamp": "2026-09-11T00:01:00Z",
+      "event": "agent_completed",
+      "agent": "architect",
+      "detail": "Proposta de stack e arquitetura entregue"
+    },
+    {
+      "timestamp": "2026-09-11T00:02:00Z",
+      "event": "agent_completed",
+      "agent": "data-engineer",
+      "detail": "Schema MySQL 8 entregue (4 tabelas, índices, padrões)"
+    },
+    {
+      "timestamp": "2026-09-11T00:10:00Z",
+      "event": "agent_completed",
+      "agent": "backend-dev",
+      "detail": "MVP implementado em D:\\Projetos\\invoice-processor — 14 arquivos criados, 14/14 testes pass, compilação e import ok"
+    },
+    {
+      "timestamp": "2026-09-11T00:11:00Z",
+      "event": "gate_passed",
+      "gate": "architecture",
+      "detail": "Aprovado: usuário confirmou caminho, handoffs architect+data existem, implementação alinhada"
+    },
+    {
+      "timestamp": "2026-09-11T00:11:00Z",
+      "event": "gate_passed",
+      "gate": "backend",
+      "detail": "Aprovado: comandos exit 0 e validação independente por leitura registradas no handoff"
+    },
+    {
+      "timestamp": "2026-09-11T00:12:00Z",
+      "event": "handoff_created",
+      "agent": "backend-dev",
+      "file": ".opencode/state/handoffs/backend-dev-20260911-invoice-mvp.md"
+    },
+    {
+      "timestamp": "2026-09-11T00:12:00Z",
+      "event": "next_agent_set",
+      "agent": "backend-reviewer",
+      "detail": "Próximo agente: backend-reviewer para revisão de código"
+    },
+    {
+      "timestamp": "2026-09-11T10:00:00Z",
+      "event": "agent_completed",
+      "agent": "backend-reviewer",
+      "detail": "Revisão concluída: 1 crítica (C1), 4 altas (A2-A5), 1 média (M4) — todas corrigidas"
+    },
+    {
+      "timestamp": "2026-09-11T10:01:00Z",
+      "event": "fixes_applied",
+      "agent": "backend-dev",
+      "detail": "Correções C1, A2, A3, A4, A5, M4 aplicadas e validadas (compileall exit 0, 14/14 tests pass, import ok)"
+    },
+    {
+      "timestamp": "2026-09-11T10:02:00Z",
+      "event": "handoff_created",
+      "agent": "backend-reviewer",
+      "file": ".opencode/state/handoffs/backend-reviewer-20260911-invoice-mvp.md"
+    },
+    {
+      "timestamp": "2026-09-11T10:03:00Z",
+      "event": "next_agent_set",
+      "agent": "security",
+      "detail": "Próximo agente: security para auditoria de segurança"
+    },
+    {
+      "timestamp": "2026-09-11T10:10:00Z",
+      "event": "audit_completed",
+      "agent": "security",
+      "detail": "Auditoria concluída: 1 crítica (auth/IDOR) e 4 altas (rate limit/DoS, Docker/Redis/ports, validação PDF, mensagens de erro) — todas corrigidas"
+    },
+    {
+      "timestamp": "2026-09-11T10:11:00Z",
+      "event": "fixes_applied",
+      "agent": "backend-dev",
+      "detail": "Correções de segurança aplicadas: middleware X-API-Key/rate limit, validação estrutural PyMuPDF antes de gravar, Docker não-root + 127.0.0.1 + Redis requirepass, mensagens genéricas; evidências: compileall, parser 14/14, auth/rate-limit 14/14, pdf-validation 5/5, import ok — todos exit 0"
+    },
+    {
+      "timestamp": "2026-09-11T10:12:00Z",
+      "event": "gate_passed",
+      "gate": "security",
+      "detail": "Aprovado: comandos exit 0, validação por leitura do Tech Lead (middleware, main, config, Dockerfile, compose, worker) e handoff registrado como evidência"
+    },
+    {
+      "timestamp": "2026-09-11T10:13:00Z",
+      "event": "handoff_created",
+      "agent": "security",
+      "file": ".opencode/state/handoffs/security-20260911-invoice-mvp.md"
+    },
+    {
+      "timestamp": "2026-09-11T10:14:00Z",
+      "event": "next_agent_set",
+      "agent": "qa-engineer",
+      "detail": "Próximo agente: qa-engineer para testes de integração e E2E (upload, processamento, consulta) com auth/rate limit"
+    },
+    {
+      "timestamp": "2026-09-11T11:30:00Z",
+      "event": "agent_completed",
+      "agent": "qa-engineer",
+      "detail": "QA concluído: 3 arquivos de teste criados (test_app_helpers.py, test_schemas_config.py, test_app_smoke.py); nenhum app/ alterado; suíte 68/68 testes PASS"
+    },
+    {
+      "timestamp": "2026-09-11T11:31:00Z",
+      "event": "gate_passed",
+      "gate": "qa",
+      "detail": "Aprovado com ressalva: QA unit/smoke 68/68 PASS sem infra real; MySQL local rejeitou credenciais default e Redis/ARQ real não processado em E2E — E2E DB/Redis vira risco/pendência DevOps"
+    },
+    {
+      "timestamp": "2026-09-11T11:32:00Z",
+      "event": "handoff_created",
+      "agent": "qa-engineer",
+      "file": ".opencode/state/handoffs/qa-engineer-20260911-invoice-mvp.md"
+    },
+    {
+      "timestamp": "2026-09-11T11:33:00Z",
+      "event": "next_agent_set",
+      "agent": "devops",
+      "detail": "Próximo agente: devops — validação E2E com MySQL/Redis reais, CI/CD e deploy"
+    },
+    {
+      "timestamp": "2026-09-11T13:00:00Z",
+      "event": "agent_completed",
+      "agent": "devops",
+      "detail": "DevOps concluído: compose validado (config --quiet), build ok, up/down/up ok, health db/redis ok, auth sem chave 401, E2E real via ARQ (job completed invoice_id=1 item_count=4, items com 4 valores corretos), innodb_trx vazio, pytest 68/68, modo local porta 8001 ok"
+    },
+    {
+      "timestamp": "2026-09-11T13:01:00Z",
+      "event": "e2e_passed",
+      "agent": "devops",
+      "detail": "E2E real aprovado: upload multipart → ARQ worker → persistência MySQL → consulta job/items com valores corretos"
+    },
+    {
+      "timestamp": "2026-09-11T13:02:00Z",
+      "event": "gate_passed",
+      "gate": "devops",
+      "detail": "Aprovado: evidências DevOps (compose, build, up/down/up, health, 401, E2E real ARQ/MySQL/Redis, pytest 68/68, uvicorn 8001) e validação por leitura do Tech Lead registradas no handoff"
+    },
+    {
+      "timestamp": "2026-09-11T13:03:00Z",
+      "event": "handoff_created",
+      "agent": "devops",
+      "file": ".opencode/state/handoffs/devops-20260911-invoice-mvp.md"
+    },
+    {
+      "timestamp": "2026-09-11T13:04:00Z",
+      "event": "next_agent_set",
+      "agent": "documentation",
+      "detail": "Próximo agente: documentation — documentação operacional final e fechamento do workflow"
+    },
+    {
+      "timestamp": "2026-09-11T14:01:00Z",
+      "event": "gate_waived",
+      "gate": "frontend",
+      "detail": "Waived: não aplicável — produto backend-only por escopo confirmado pelo usuário; sem frontend no MVP (sem telas, build TypeScript nem fluxos de UI)"
+    },
+    {
+      "timestamp": "2026-09-11T14:05:00Z",
+      "event": "agent_completed",
+      "agent": "documentation",
+      "detail": "Documentation concluído: handoff final criado com resumo do projeto (stack, arquivos, endpoints, runbook), evidências 68/68 testes + E2E real, riscos remanescentes e próximos passos; workflow.json atualizado"
+    },
+    {
+      "timestamp": "2026-09-11T14:05:00Z",
+      "event": "handoff_created",
+      "agent": "documentation",
+      "file": ".opencode/state/handoffs/documentation-20260911-invoice-mvp-final.md"
+    },
+    {
+      "timestamp": "2026-09-11T14:06:00Z",
+      "event": "workflow_completed",
+      "detail": "Workflow invoice_processor_mvp concluído: todos os gates aplicáveis passed, frontend waived (backend-only), pending_agents vazio, current_agent null, status completed"
+    },
+    {
+      "timestamp": "2026-09-11T15:00:00Z",
+      "event": "user_requested_frontend",
+      "detail": "Usuário solicitou frontend React moderno/mobile para interagir com o backend do invoice-processor em D:\\Projetos\\invoice-processor\\frontend (produto não é git repo)"
+    },
+    {
+      "timestamp": "2026-09-11T16:00:00Z",
+      "event": "agent_completed",
+      "agent": "frontend-dev",
+      "detail": "Frontend implementado: React 18 + TypeScript + Vite 5 + CSS Modules, upload PDF, API key, health, job polling, items, mobile responsive; npm install/build/lint exit 0 + smoke dev HTTP 200"
+    },
+    {
+      "timestamp": "2026-09-11T16:30:00Z",
+      "event": "handoff_created",
+      "agent": "frontend-dev",
+      "file": ".opencode/state/handoffs/frontend-dev-20260911-invoice-ui.md"
+    },
+    {
+      "timestamp": "2026-09-11T16:31:00Z",
+      "event": "next_agent_set",
+      "agent": "frontend-reviewer",
+      "detail": "Próximo agente: frontend-reviewer para revisão do frontend"
+    },
+    {
+      "timestamp": "2026-09-11T17:00:00Z",
+      "event": "agent_completed",
+      "agent": "frontend-reviewer",
+      "detail": "Revisão 1: C1/A1/A2/M1/M2 reportados; frontend-dev corrigiu formatBRL, API key opt-in localStorage, Vite host 127.0.0.1, AbortController timeout, polling backoff/limite de erros, integer job lookup e adicionou test:format. Revisão 2 aprovou com ressalvas de contraste; a11y polish aplicado: tokens strong, contraste AA, engines Node >=23.6, formatBRL('') => '—'"
+    },
+    {
+      "timestamp": "2026-09-11T17:05:00Z",
+      "event": "fixes_applied",
+      "agent": "frontend-dev",
+      "detail": "a11y polish aplicado e validado: npm run build exit 0, npm run lint exit 0, npm run test:format exit 0"
+    },
+    {
+      "timestamp": "2026-09-11T17:30:00Z",
+      "event": "gate_passed",
+      "gate": "frontend",
+      "detail": "Aprovado: build/lint/test:format exit 0 + smoke dev HTTP 200 e revisão em 2 rodadas (correções aplicadas + a11y AA) — waiver anterior superseded (frontend implementado depois)"
+    },
+    {
+      "timestamp": "2026-09-11T18:00:00Z",
+      "event": "workflow_updated",
+      "detail": "Workflow atualizado sem reabrir fluxo: frontend-dev e frontend-reviewer em completed_agents, artifact do handoff frontend, gate frontend passed, waiver frontend superseded, last_validation agregada (backend E2E + frontend build/lint/test:format); status mantido completed, pending_agents vazio, current_agent null"
+    }
+  ]
 }

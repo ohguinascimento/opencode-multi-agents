@@ -66,8 +66,10 @@ Copy-Item -Force "opencode.json" "$TargetDir\"
 
 # Copiar scripts
 Print-Info "Copiando scripts..."
-if (Test-Path "start.ps1") { Copy-Item -Force "start.ps1" "$TargetDir\" }
-if (Test-Path "start.sh")  { Copy-Item -Force "start.sh" "$TargetDir\" }
+if (Test-Path "start.ps1")    { Copy-Item -Force "start.ps1" "$TargetDir\" }
+if (Test-Path "start.sh")     { Copy-Item -Force "start.sh" "$TargetDir\" }
+if (Test-Path "set-mode.ps1") { Copy-Item -Force "set-mode.ps1" "$TargetDir\" }
+if (Test-Path "set-mode.sh")  { Copy-Item -Force "set-mode.sh" "$TargetDir\" }
 
 # Copiar .gitignore (adicionar entradas se ja existir)
 if (Test-Path "$TargetDir\.gitignore") {

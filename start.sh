@@ -148,6 +148,7 @@ show_help() {
     echo "  /security-audit  - Auditoria de segurança"
     echo "  /deploy          - Configurar deploy"
     echo "  /status          - Ver progresso"
+    echo "  /mode            - Ver/configurar modo de permissões"
     echo
     echo -e "${BLUE}═══════════════════════════════════════════${NC}"
     echo -e "${BLUE}  MANTER ATUALIZADO${NC}"
@@ -200,10 +201,34 @@ main() {
         echo
         show_help "first"
     fi
-    
-    print_info "Iniciando opencode..."
-    echo
-    exec opencode
+
+    # Detectar modo de permissões (Auto vs Ask)
+    local IS_AUTO=false
+    if [[ "$*" == *"--auto"* ]] || [[ "$*" == *"-y"* ]]; then
+        IS_AUTO=true
+    elif [[ "$*" == *"--ask"* ]]; then
+        IS_AUTO=false
+    else
+        local EDIT_PERM
+        EDIT_PERM=$(node -e "try { const c = require('./opencode.json'); console.log(c.permission?.edit || 'ask'); } catch(e) { console.log('ask'); }" 2>/dev/null || echo "ask")
+        if [ "$EDIT_PERM" = "allow" ]; then
+            IS_AUTO=true
+        fi
+    fi
+
+    if [ "$IS_AUTO" = true ]; then
+        print_success "Modo de Permissões: AUTÔNOMO (Sem pedir confirmação para modificações/comandos)"
+        print_info "Iniciando opencode com --auto..."
+        echo
+        exec opencode --auto
+    else
+        print_warning "Modo de Permissões: SEGURO / INTERATIVO (Pedirá confirmação a cada alteração)"
+        print_info "Dica: Para executar sem confirmação, use ./start.sh --auto ou rode ./set-mode.sh auto"
+        echo
+        print_info "Iniciando opencode..."
+        echo
+        exec opencode
+    fi
 }
 
 main "$@"
